@@ -417,18 +417,26 @@ JSEncrypt.prototype.decrypt = function (string) {
  * components of the rsa key object. Note that if the object was not set will be created
  * on the fly (by the getKey method) using the parameters passed in the JSEncrypt constructor
  * @param {string} string the string to encrypt
+ * @param {outputFormat} string specifying the desired output format. Not required, can be undefined.
  * @return {string} the encrypted string encoded in base64
  * @public
  */
-JSEncrypt.prototype.encrypt = function (string) {
-  // Return the encrypted string.
-  try {
-    return hex2b64(this.getKey().encrypt(string));
-  }
-  catch (ex) {
-    return false;
-  }
-};
+ JSEncrypt.prototype.encrypt = function (string, outputFormat) {
+   // Return the encrypted string.
+   try {
+     // Handle different output formats, default to base64 to API breaking.
+     switch(outputFormat){
+       case 'HEX':
+         return this.getKey().encrypt(string);
+       case 'BASE64':
+         return hex2b64(this.getKey().encrypt(string));
+       default:
+         return hex2b64(this.getKey().encrypt(string));
+     }
+   } catch (ex){
+     return false;
+   }
+ };
 
 /**
  * Getter for the current JSEncryptRSAKey object. If it doesn't exists a new object
@@ -497,4 +505,3 @@ JSEncrypt.prototype.getPublicKeyB64 = function () {
   // Return the private representation of this key.
   return this.getKey().getPublicBaseKeyB64();
 };
-
